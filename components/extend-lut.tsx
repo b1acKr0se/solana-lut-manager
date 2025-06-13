@@ -293,24 +293,24 @@ export default function ExtendLUT({ lutAddress, setLutAddress, addresses, setAdd
   }
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
       {/* Left section - Extend LUT form */}
-      <Card className="glass-card overflow-hidden">
-        <CardHeader className="border-b border-slate-700/50 bg-slate-800/30">
+      <Card className="glass-card">
+        <CardHeader className="border-b border-slate-700/50 bg-slate-800/30 py-3">
           <div className="flex items-center">
-            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-600 to-blue-500 flex items-center justify-center mr-4">
-              <GitBranch className="h-5 w-5 text-white" />
+            <div className="w-7 h-7 rounded-full bg-gradient-to-br from-purple-600 to-blue-500 flex items-center justify-center mr-3">
+              <GitBranch className="h-3.5 w-3.5 text-white" />
             </div>
             <div>
-              <CardTitle>Extend Look-Up Table</CardTitle>
-              <CardDescription className="text-slate-300">Add addresses to an existing LUT</CardDescription>
+              <CardTitle className="text-lg sm:text-xl">Extend Look-Up Table</CardTitle>
+              <CardDescription className="text-slate-300 text-sm">Add addresses to an existing LUT</CardDescription>
             </div>
           </div>
         </CardHeader>
-        <CardContent className="pt-6">
-          <div className="space-y-6">
+        <CardContent className="pt-4">
+          <div className="space-y-4">
             <div>
-              <label htmlFor="lutAddress" className="block text-sm font-medium mb-2 text-slate-200">
+              <label htmlFor="lutAddress" className="block text-sm font-medium mb-1 text-slate-200">
                 LUT Address
               </label>
               <Input
@@ -323,18 +323,18 @@ export default function ExtendLUT({ lutAddress, setLutAddress, addresses, setAdd
             </div>
 
             <div>
-              <label htmlFor="addresses" className="block text-sm font-medium mb-2 text-slate-200">
+              <label htmlFor="addresses" className="block text-sm font-medium mb-1 text-slate-200">
                 Addresses to Add (one per line)
               </label>
               <Textarea
                 id="addresses"
                 placeholder="Enter Solana addresses here, one per line"
-                rows={6}
+                rows={4}
                 value={addresses}
                 onChange={(e) => setAddresses(e.target.value)}
                 className="bg-slate-900/70 border-slate-700/50 focus:border-purple-500 transition-all duration-200"
               />
-              <p className="mt-2 text-xs text-slate-400">
+              <p className="mt-1 text-xs text-slate-400">
                 Enter each Solana address on a new line. These addresses will be added to the existing LUT.
               </p>
             </div>
@@ -361,7 +361,7 @@ export default function ExtendLUT({ lutAddress, setLutAddress, addresses, setAdd
               <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }}>
                 <Alert className="border border-yellow-900/50 bg-yellow-900/20">
                   <AlertTriangle className="h-4 w-4 text-yellow-500" />
-                  <AlertDescription className="space-y-3">
+                  <AlertDescription className="space-y-2">
                     <div>
                       <span className="font-semibold text-yellow-400">
                         {duplicateAnalysis.duplicateAddresses.length}
@@ -372,7 +372,7 @@ export default function ExtendLUT({ lutAddress, setLutAddress, addresses, setAdd
                       <span className="font-semibold text-green-400">{duplicateAnalysis.uniqueAddresses.length}</span>{" "}
                       new addresses will be added.
                     </div>
-                    <div className="flex flex-wrap gap-2 mt-2">
+                    <div className="flex flex-wrap gap-2 mt-1">
                       {duplicateAnalysis.duplicateAddresses.slice(0, 3).map((addr, i) => (
                         <Badge
                           key={i}
@@ -388,7 +388,7 @@ export default function ExtendLUT({ lutAddress, setLutAddress, addresses, setAdd
                         </Badge>
                       )}
                     </div>
-                    <div className="flex gap-2 mt-3">
+                    <div className="flex gap-2 mt-2">
                       <Button
                         size="sm"
                         variant="outline"
@@ -412,7 +412,7 @@ export default function ExtendLUT({ lutAddress, setLutAddress, addresses, setAdd
             )}
           </div>
         </CardContent>
-        <CardFooter className="border-t border-slate-700/50 bg-slate-800/30 px-6 py-4">
+        <CardFooter className="border-t border-slate-700/50 bg-slate-800/30 px-6 py-3">
           <Button
             onClick={handleAnalyzeAndExtend}
             disabled={isLoading || !publicKey || !lutAddress || addresses.trim() === ""}
@@ -433,16 +433,18 @@ export default function ExtendLUT({ lutAddress, setLutAddress, addresses, setAdd
       </Card>
 
       {/* Right section - Current LUT addresses */}
-      <Card className="glass-card overflow-hidden h-fit">
-        <CardHeader className="border-b border-slate-700/50 bg-slate-800/30">
+      <Card className="glass-card">
+        <CardHeader className="border-b border-slate-700/50 bg-slate-800/30 py-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center">
-              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-cyan-400 flex items-center justify-center mr-4">
-                <GitBranch className="h-5 w-5 text-white" />
+              <div className="w-7 h-7 rounded-full bg-gradient-to-br from-blue-500 to-cyan-400 flex items-center justify-center mr-3">
+                <GitBranch className="h-3.5 w-3.5 text-white" />
               </div>
               <div>
-                <CardTitle>Current LUT Addresses</CardTitle>
-                <CardDescription className="text-slate-300">Addresses currently stored in the LUT</CardDescription>
+                <CardTitle className="text-lg sm:text-xl">Current LUT Addresses</CardTitle>
+                <CardDescription className="text-slate-300 text-sm">
+                  Addresses currently stored in the LUT
+                </CardDescription>
               </div>
             </div>
             {currentAddresses.length > 0 && (
@@ -454,13 +456,13 @@ export default function ExtendLUT({ lutAddress, setLutAddress, addresses, setAdd
         </CardHeader>
         <CardContent className="p-0">
           {isLoadingLut ? (
-            <div className="flex flex-col justify-center items-center py-16 px-6">
+            <div className="flex flex-col justify-center items-center py-8 px-6">
               <Loader2 className="h-10 w-10 animate-spin text-purple-500 mb-4" />
               <p className="text-slate-400">Loading addresses...</p>
             </div>
           ) : lutAddress ? (
             currentAddresses.length > 0 ? (
-              <div className="table-container max-h-[400px] overflow-auto">
+              <div className="max-h-[300px] overflow-auto">
                 <Table>
                   <TableHeader className="sticky top-0 bg-slate-800/90 backdrop-blur-sm">
                     <TableRow className="hover:bg-slate-800">
@@ -492,7 +494,7 @@ export default function ExtendLUT({ lutAddress, setLutAddress, addresses, setAdd
                 </Table>
               </div>
             ) : (
-              <div className="flex flex-col justify-center items-center py-16 px-6 text-center">
+              <div className="flex flex-col justify-center items-center py-8 px-6 text-center">
                 <div className="w-16 h-16 rounded-full bg-yellow-900/20 flex items-center justify-center mb-4">
                   <AlertCircle className="h-8 w-8 text-yellow-500" />
                 </div>
@@ -503,7 +505,7 @@ export default function ExtendLUT({ lutAddress, setLutAddress, addresses, setAdd
               </div>
             )
           ) : (
-            <div className="flex flex-col justify-center items-center py-16 px-6 text-center">
+            <div className="flex flex-col justify-center items-center py-8 px-6 text-center">
               <div className="w-16 h-16 rounded-full bg-slate-800/50 flex items-center justify-center mb-4 animate-pulse-slow">
                 <GitBranch className="h-8 w-8 text-slate-500" />
               </div>

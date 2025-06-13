@@ -26,10 +26,11 @@ export default function NetworkSelector({ selectedNetwork, onNetworkChange }: Ne
       <DropdownMenuTrigger asChild>
         <Button
           variant="outline"
-          className="bg-slate-800/70 border-slate-700/50 text-slate-200 hover:bg-slate-700/50 transition-all duration-300"
+          size="sm"
+          className="bg-slate-800/70 border-slate-700/50 text-slate-200 hover:bg-slate-700/50 transition-all duration-300 h-9 px-3"
         >
           <div className={`w-2 h-2 rounded-full mr-2 ${currentNetwork.color} animate-pulse`} />
-          <Globe className="mr-2 h-4 w-4" />
+          <Globe className="mr-1 h-3.5 w-3.5" />
           {currentNetwork.label}
         </Button>
       </DropdownMenuTrigger>

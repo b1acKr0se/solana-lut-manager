@@ -110,20 +110,22 @@ export default function CreateLUT({ addresses, setAddresses }: CreateLUTProps) {
   }
 
   return (
-    <Card className="glass-card overflow-hidden">
-      <CardHeader className="border-b border-slate-700/50 bg-slate-800/30">
+    <Card className="glass-card">
+      <CardHeader className="border-b border-slate-700/50 bg-slate-800/30 py-3">
         <div className="flex items-center">
-          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-600 to-blue-500 flex items-center justify-center mr-4">
-            <Database className="h-5 w-5 text-white" />
+          <div className="w-7 h-7 rounded-full bg-gradient-to-br from-purple-600 to-blue-500 flex items-center justify-center mr-3">
+            <Database className="h-3.5 w-3.5 text-white" />
           </div>
           <div>
-            <CardTitle>Create New Look-Up Table</CardTitle>
-            <CardDescription className="text-slate-300">Create a new LUT with a list of addresses</CardDescription>
+            <CardTitle className="text-lg sm:text-xl">Create New Look-Up Table</CardTitle>
+            <CardDescription className="text-slate-300 text-sm">
+              Create a new LUT with a list of addresses
+            </CardDescription>
           </div>
         </div>
       </CardHeader>
-      <CardContent className="pt-6">
-        <div className="space-y-6">
+      <CardContent className="pt-4">
+        <div className="space-y-4">
           <div>
             <label htmlFor="addresses" className="block text-sm font-medium mb-2 text-slate-200">
               Addresses (one per line)
@@ -131,7 +133,7 @@ export default function CreateLUT({ addresses, setAddresses }: CreateLUTProps) {
             <Textarea
               id="addresses"
               placeholder="Enter Solana addresses here, one per line"
-              rows={8}
+              rows={6}
               value={addresses}
               onChange={(e) => setAddresses(e.target.value)}
               className="bg-slate-900/70 border-slate-700/50 focus:border-purple-500 transition-all duration-200"
@@ -173,7 +175,7 @@ export default function CreateLUT({ addresses, setAddresses }: CreateLUTProps) {
           )}
         </div>
       </CardContent>
-      <CardFooter className="border-t border-slate-700/50 bg-slate-800/30 px-6 py-4">
+      <CardFooter className="border-t border-slate-700/50 bg-slate-800/30 px-6 py-3">
         <Button
           onClick={handleCreateLUT}
           disabled={isLoading || !publicKey || !addresses.trim()}

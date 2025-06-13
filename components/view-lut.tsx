@@ -92,25 +92,22 @@ export default function ViewLUT({ lutAddress, setLutAddress }: ViewLUTProps) {
   )
 
   return (
-    <Card className="glass-card overflow-hidden">
-      <CardHeader className="border-b border-slate-700/50 bg-slate-800/30">
+    <Card className="glass-card">
+      <CardHeader className="border-b border-slate-700/50 bg-slate-800/30 py-3">
         <div className="flex items-center">
-          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-cyan-400 flex items-center justify-center mr-4">
-            <Search className="h-5 w-5 text-white" />
+          <div className="w-7 h-7 rounded-full bg-gradient-to-br from-blue-500 to-cyan-400 flex items-center justify-center mr-3">
+            <Search className="h-3.5 w-3.5 text-white" />
           </div>
           <div>
-            <CardTitle>View Look-Up Table</CardTitle>
-            <CardDescription className="text-slate-300">View addresses stored in a LUT</CardDescription>
+            <CardTitle className="text-lg sm:text-xl">View Look-Up Table</CardTitle>
+            <CardDescription className="text-slate-300 text-sm">View addresses stored in a LUT</CardDescription>
           </div>
         </div>
       </CardHeader>
-      <CardContent className="pt-6">
-        <div className="space-y-6">
-          <div className="flex flex-col md:flex-row gap-4">
+      <CardContent className="pt-4">
+        <div className="space-y-4">
+          <div className="flex flex-col md:flex-row gap-3">
             <div className="flex-1">
-              <label htmlFor="lutAddress" className="block text-sm font-medium mb-2 text-slate-200">
-                LUT Address
-              </label>
               <Input
                 id="lutAddress"
                 placeholder="Enter LUT address"
@@ -119,7 +116,7 @@ export default function ViewLUT({ lutAddress, setLutAddress }: ViewLUTProps) {
                 className="bg-slate-900/70 border-slate-700/50 focus:border-purple-500 transition-all duration-200"
               />
             </div>
-            <div className="md:pt-8">
+            <div>
               <Button
                 onClick={handleViewLUT}
                 disabled={isLoading || !lutAddress}
@@ -172,7 +169,7 @@ export default function ViewLUT({ lutAddress, setLutAddress }: ViewLUTProps) {
               </div>
 
               <div className="border border-slate-700/50 rounded-lg overflow-hidden">
-                <div className="table-container max-h-[400px] overflow-auto">
+                <div className="max-h-[300px] overflow-auto">
                   <Table>
                     <TableHeader className="sticky top-0 bg-slate-800/90 backdrop-blur-sm">
                       <TableRow className="hover:bg-slate-800">
@@ -216,7 +213,7 @@ export default function ViewLUT({ lutAddress, setLutAddress }: ViewLUTProps) {
           )}
 
           {!addresses.length && !error && !isLoading && lutAddress && (
-            <div className="flex flex-col justify-center items-center py-16 px-6 text-center">
+            <div className="flex flex-col justify-center items-center py-8 px-6 text-center">
               <div className="w-16 h-16 rounded-full bg-yellow-900/20 flex items-center justify-center mb-4">
                 <AlertCircle className="h-8 w-8 text-yellow-500" />
               </div>
@@ -228,7 +225,7 @@ export default function ViewLUT({ lutAddress, setLutAddress }: ViewLUTProps) {
           )}
 
           {!lutAddress && !isLoading && (
-            <div className="flex flex-col justify-center items-center py-16 px-6 text-center">
+            <div className="flex flex-col justify-center items-center py-8 px-6 text-center">
               <div className="w-16 h-16 rounded-full bg-slate-800/50 flex items-center justify-center mb-4 animate-pulse-slow">
                 <Search className="h-8 w-8 text-slate-500" />
               </div>
