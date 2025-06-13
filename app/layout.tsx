@@ -1,5 +1,6 @@
 import type React from "react"
 import "./globals.css"
+import "@solana/wallet-adapter-react-ui/styles.css"
 import { Inter } from "next/font/google"
 import { ThemeProvider } from "@/components/theme-provider"
 
