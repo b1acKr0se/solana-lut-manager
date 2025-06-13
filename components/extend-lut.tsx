@@ -14,10 +14,11 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Alert, AlertDescription } from "@/components/ui/alert"
-import { Loader2, AlertCircle, CheckCircle2, Copy, AlertTriangle } from "lucide-react"
+import { Loader2, AlertCircle, CheckCircle2, Copy, AlertTriangle, GitBranch } from "lucide-react"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { useNetwork } from "./wallet-provider"
 import { Badge } from "@/components/ui/badge"
+import { motion } from "framer-motion"
 
 interface LUTAddress {
   index: number
@@ -292,17 +293,24 @@ export default function ExtendLUT({ lutAddress, setLutAddress, addresses, setAdd
   }
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
       {/* Left section - Extend LUT form */}
-      <Card className="bg-slate-800 border-slate-700">
-        <CardHeader>
-          <CardTitle>Extend Look-Up Table</CardTitle>
-          <CardDescription className="text-slate-400">Add addresses to an existing LUT</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
+      <Card className="glass-card overflow-hidden">
+        <CardHeader className="border-b border-slate-700/50 bg-slate-800/30">
+          <div className="flex items-center">
+            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-600 to-blue-500 flex items-center justify-center mr-4">
+              <GitBranch className="h-5 w-5 text-white" />
+            </div>
             <div>
-              <label htmlFor="lutAddress" className="block text-sm font-medium mb-2">
+              <CardTitle>Extend Look-Up Table</CardTitle>
+              <CardDescription className="text-slate-300">Add addresses to an existing LUT</CardDescription>
+            </div>
+          </div>
+        </CardHeader>
+        <CardContent className="pt-6">
+          <div className="space-y-6">
+            <div>
+              <label htmlFor="lutAddress" className="block text-sm font-medium mb-2 text-slate-200">
                 LUT Address
               </label>
               <Input
@@ -310,12 +318,12 @@ export default function ExtendLUT({ lutAddress, setLutAddress, addresses, setAdd
                 placeholder="Enter LUT address"
                 value={lutAddress}
                 onChange={(e) => setLutAddress(e.target.value)}
-                className="bg-slate-900 border-slate-700"
+                className="bg-slate-900/70 border-slate-700/50 focus:border-purple-500 transition-all duration-200"
               />
             </div>
 
             <div>
-              <label htmlFor="addresses" className="block text-sm font-medium mb-2">
+              <label htmlFor="addresses" className="block text-sm font-medium mb-2 text-slate-200">
                 Addresses to Add (one per line)
               </label>
               <Textarea
@@ -324,75 +332,91 @@ export default function ExtendLUT({ lutAddress, setLutAddress, addresses, setAdd
                 rows={6}
                 value={addresses}
                 onChange={(e) => setAddresses(e.target.value)}
-                className="bg-slate-900 border-slate-700"
+                className="bg-slate-900/70 border-slate-700/50 focus:border-purple-500 transition-all duration-200"
               />
+              <p className="mt-2 text-xs text-slate-400">
+                Enter each Solana address on a new line. These addresses will be added to the existing LUT.
+              </p>
             </div>
 
             {error && (
-              <Alert variant="destructive">
-                <AlertCircle className="h-4 w-4" />
-                <AlertDescription>{error}</AlertDescription>
-              </Alert>
+              <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }}>
+                <Alert variant="destructive" className="border border-red-900/50 bg-red-900/20">
+                  <AlertCircle className="h-4 w-4" />
+                  <AlertDescription>{error}</AlertDescription>
+                </Alert>
+              </motion.div>
             )}
 
             {success && (
-              <Alert className="bg-green-900 border-green-800">
-                <CheckCircle2 className="h-4 w-4" />
-                <AlertDescription>{success}</AlertDescription>
-              </Alert>
+              <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }}>
+                <Alert className="border border-green-900/50 bg-green-900/20">
+                  <CheckCircle2 className="h-4 w-4 text-green-500" />
+                  <AlertDescription className="text-green-400">{success}</AlertDescription>
+                </Alert>
+              </motion.div>
             )}
 
             {showConfirmation && duplicateAnalysis && (
-              <Alert className="bg-yellow-900 border-yellow-800">
-                <AlertTriangle className="h-4 w-4" />
-                <AlertDescription className="space-y-2">
-                  <p>
-                    <strong>{duplicateAnalysis.duplicateAddresses.length}</strong> duplicate addresses found that are
-                    already in the LUT.
-                  </p>
-                  <p>
-                    <strong>{duplicateAnalysis.uniqueAddresses.length}</strong> new addresses will be added.
-                  </p>
-                  <div className="flex flex-wrap gap-2 mt-2">
-                    {duplicateAnalysis.duplicateAddresses.slice(0, 3).map((addr, i) => (
-                      <Badge key={i} variant="outline" className="bg-yellow-800 text-xs font-mono">
-                        {addr.substring(0, 4)}...{addr.substring(addr.length - 4)}
-                      </Badge>
-                    ))}
-                    {duplicateAnalysis.duplicateAddresses.length > 3 && (
-                      <Badge variant="outline" className="bg-yellow-800">
-                        +{duplicateAnalysis.duplicateAddresses.length - 3} more
-                      </Badge>
-                    )}
-                  </div>
-                  <div className="flex gap-2 mt-3">
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => setShowConfirmation(false)}
-                      className="border-yellow-600"
-                    >
-                      Cancel
-                    </Button>
-                    <Button
-                      size="sm"
-                      onClick={handleExtendLUT}
-                      disabled={duplicateAnalysis.uniqueAddresses.length === 0}
-                      className="bg-yellow-600 hover:bg-yellow-700"
-                    >
-                      Proceed with {duplicateAnalysis.uniqueAddresses.length} addresses
-                    </Button>
-                  </div>
-                </AlertDescription>
-              </Alert>
+              <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }}>
+                <Alert className="border border-yellow-900/50 bg-yellow-900/20">
+                  <AlertTriangle className="h-4 w-4 text-yellow-500" />
+                  <AlertDescription className="space-y-3">
+                    <div>
+                      <span className="font-semibold text-yellow-400">
+                        {duplicateAnalysis.duplicateAddresses.length}
+                      </span>{" "}
+                      duplicate addresses found that are already in the LUT.
+                    </div>
+                    <div>
+                      <span className="font-semibold text-green-400">{duplicateAnalysis.uniqueAddresses.length}</span>{" "}
+                      new addresses will be added.
+                    </div>
+                    <div className="flex flex-wrap gap-2 mt-2">
+                      {duplicateAnalysis.duplicateAddresses.slice(0, 3).map((addr, i) => (
+                        <Badge
+                          key={i}
+                          variant="outline"
+                          className="bg-yellow-900/30 border-yellow-700/50 text-xs font-mono"
+                        >
+                          {addr.substring(0, 4)}...{addr.substring(addr.length - 4)}
+                        </Badge>
+                      ))}
+                      {duplicateAnalysis.duplicateAddresses.length > 3 && (
+                        <Badge variant="outline" className="bg-yellow-900/30 border-yellow-700/50">
+                          +{duplicateAnalysis.duplicateAddresses.length - 3} more
+                        </Badge>
+                      )}
+                    </div>
+                    <div className="flex gap-2 mt-3">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => setShowConfirmation(false)}
+                        className="border-yellow-700/50 hover:bg-yellow-900/30"
+                      >
+                        Cancel
+                      </Button>
+                      <Button
+                        size="sm"
+                        onClick={handleExtendLUT}
+                        disabled={duplicateAnalysis.uniqueAddresses.length === 0}
+                        className="bg-yellow-600 hover:bg-yellow-700"
+                      >
+                        Proceed with {duplicateAnalysis.uniqueAddresses.length} addresses
+                      </Button>
+                    </div>
+                  </AlertDescription>
+                </Alert>
+              </motion.div>
             )}
           </div>
         </CardContent>
-        <CardFooter>
+        <CardFooter className="border-t border-slate-700/50 bg-slate-800/30 px-6 py-4">
           <Button
             onClick={handleAnalyzeAndExtend}
             disabled={isLoading || !publicKey || !lutAddress || addresses.trim() === ""}
-            className="w-full bg-purple-600 hover:bg-purple-700"
+            className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 transition-all duration-300"
           >
             {isLoading ? (
               <>
@@ -409,63 +433,82 @@ export default function ExtendLUT({ lutAddress, setLutAddress, addresses, setAdd
       </Card>
 
       {/* Right section - Current LUT addresses */}
-      <Card className="bg-slate-800 border-slate-700">
-        <CardHeader>
-          <CardTitle>Current LUT Addresses</CardTitle>
-          <CardDescription className="text-slate-400">Addresses currently stored in the LUT</CardDescription>
+      <Card className="glass-card overflow-hidden h-fit">
+        <CardHeader className="border-b border-slate-700/50 bg-slate-800/30">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center">
+              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-cyan-400 flex items-center justify-center mr-4">
+                <GitBranch className="h-5 w-5 text-white" />
+              </div>
+              <div>
+                <CardTitle>Current LUT Addresses</CardTitle>
+                <CardDescription className="text-slate-300">Addresses currently stored in the LUT</CardDescription>
+              </div>
+            </div>
+            {currentAddresses.length > 0 && (
+              <Badge className="bg-blue-600/30 text-blue-300 border-blue-500/50">
+                {currentAddresses.length} addresses
+              </Badge>
+            )}
+          </div>
         </CardHeader>
-        <CardContent>
+        <CardContent className="p-0">
           {isLoadingLut ? (
-            <div className="flex justify-center items-center py-8">
-              <Loader2 className="h-8 w-8 animate-spin text-purple-500" />
+            <div className="flex flex-col justify-center items-center py-16 px-6">
+              <Loader2 className="h-10 w-10 animate-spin text-purple-500 mb-4" />
+              <p className="text-slate-400">Loading addresses...</p>
             </div>
           ) : lutAddress ? (
             currentAddresses.length > 0 ? (
-              <div className="space-y-4">
-                <div className="border border-slate-700 rounded-md overflow-hidden">
-                  <Table>
-                    <TableHeader>
-                      <TableRow className="hover:bg-slate-800">
-                        <TableHead className="w-16">Index</TableHead>
-                        <TableHead>Address</TableHead>
-                        <TableHead className="w-16">Copy</TableHead>
+              <div className="table-container max-h-[400px] overflow-auto">
+                <Table>
+                  <TableHeader className="sticky top-0 bg-slate-800/90 backdrop-blur-sm">
+                    <TableRow className="hover:bg-slate-800">
+                      <TableHead className="w-16 text-slate-300">Index</TableHead>
+                      <TableHead className="text-slate-300">Address</TableHead>
+                      <TableHead className="w-16 text-slate-300">Copy</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {currentAddresses.map((item) => (
+                      <TableRow key={item.index} className="hover:bg-slate-800/50 border-slate-700/30">
+                        <TableCell className="text-slate-400">{item.index}</TableCell>
+                        <TableCell className="font-mono text-xs md:text-sm truncate max-w-[100px] md:max-w-[200px] text-slate-300">
+                          {item.address}
+                        </TableCell>
+                        <TableCell>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => copyToClipboard(item.address)}
+                            className="h-8 w-8 hover:bg-slate-700/50"
+                          >
+                            <Copy className="h-4 w-4" />
+                          </Button>
+                        </TableCell>
                       </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {currentAddresses.map((item) => (
-                        <TableRow key={item.index} className="hover:bg-slate-800">
-                          <TableCell>{item.index}</TableCell>
-                          <TableCell className="font-mono text-xs md:text-sm truncate max-w-[100px] md:max-w-[200px]">
-                            {item.address}
-                          </TableCell>
-                          <TableCell>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              onClick={() => copyToClipboard(item.address)}
-                              className="h-8 w-8"
-                            >
-                              <Copy className="h-4 w-4" />
-                            </Button>
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </div>
-                <div className="text-sm text-slate-400">Total addresses: {currentAddresses.length}</div>
+                    ))}
+                  </TableBody>
+                </Table>
               </div>
             ) : (
-              <div className="text-center py-8">
-                <AlertCircle className="h-8 w-8 text-yellow-500 mx-auto mb-2" />
-                <p className="text-slate-300">No addresses found in this LUT</p>
-                <p className="text-slate-400 text-sm mt-1">
+              <div className="flex flex-col justify-center items-center py-16 px-6 text-center">
+                <div className="w-16 h-16 rounded-full bg-yellow-900/20 flex items-center justify-center mb-4">
+                  <AlertCircle className="h-8 w-8 text-yellow-500" />
+                </div>
+                <p className="text-slate-300 font-medium">No addresses found in this LUT</p>
+                <p className="text-slate-400 text-sm mt-2 max-w-xs">
                   This could be because the LUT is empty or the address is not a valid LUT
                 </p>
               </div>
             )
           ) : (
-            <div className="text-center py-8 text-slate-400">Enter a LUT address to view current addresses</div>
+            <div className="flex flex-col justify-center items-center py-16 px-6 text-center">
+              <div className="w-16 h-16 rounded-full bg-slate-800/50 flex items-center justify-center mb-4 animate-pulse-slow">
+                <GitBranch className="h-8 w-8 text-slate-500" />
+              </div>
+              <p className="text-slate-400">Enter a LUT address to view current addresses</p>
+            </div>
           )}
         </CardContent>
       </Card>
