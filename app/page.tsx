@@ -186,7 +186,9 @@ function TabsContainer({
 
         <div className="overflow-visible">
           <TabsContent value="create" className="animate-fade-in">
-            <CreateLUT addresses={createAddresses} setAddresses={setCreateAddresses} />
+            <div className="max-w-3xl mx-auto">
+              <CreateLUT addresses={createAddresses} setAddresses={setCreateAddresses} />
+            </div>
           </TabsContent>
           <TabsContent value="extend" className="animate-fade-in">
             <ExtendLUT
@@ -197,7 +199,9 @@ function TabsContainer({
             />
           </TabsContent>
           <TabsContent value="view" className="animate-fade-in">
-            <ViewLUT lutAddress={viewLutAddress} setLutAddress={setViewLutAddress} />
+            <div className="max-w-3xl mx-auto">
+              <ViewLUT lutAddress={viewLutAddress} setLutAddress={setViewLutAddress} />
+            </div>
           </TabsContent>
         </div>
       </Tabs>

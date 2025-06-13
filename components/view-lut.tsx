@@ -106,7 +106,7 @@ export default function ViewLUT({ lutAddress, setLutAddress }: ViewLUTProps) {
       </CardHeader>
       <CardContent className="pt-4">
         <div className="space-y-4">
-          <div className="flex flex-col md:flex-row gap-3">
+          <div className="flex flex-col sm:flex-row gap-3">
             <div className="flex-1">
               <Input
                 id="lutAddress"
@@ -120,7 +120,7 @@ export default function ViewLUT({ lutAddress, setLutAddress }: ViewLUTProps) {
               <Button
                 onClick={handleViewLUT}
                 disabled={isLoading || !lutAddress}
-                className="w-full md:w-auto bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 transition-all duration-300"
+                className="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 transition-all duration-300"
               >
                 {isLoading ? (
                   <>
@@ -153,11 +153,11 @@ export default function ViewLUT({ lutAddress, setLutAddress }: ViewLUTProps) {
               transition={{ duration: 0.3 }}
               className="space-y-4"
             >
-              <div className="flex justify-between items-center">
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
                 <Badge className="bg-blue-600/30 text-blue-300 border-blue-500/50">
                   {addresses.length} addresses found
                 </Badge>
-                <div className="relative w-full max-w-xs">
+                <div className="relative w-full sm:max-w-xs">
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
                   <Input
                     placeholder="Search addresses..."
