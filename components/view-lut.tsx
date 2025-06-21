@@ -6,12 +6,13 @@ import { Connection, PublicKey } from "@solana/web3.js"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
-import { Alert, AlertDescription } from "@/components/ui/alert"
-import { Loader2, AlertCircle, Copy, Search } from "lucide-react"
+import { Loader2, AlertCircle, Search } from "lucide-react"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { useNetwork } from "./wallet-provider"
 import { Badge } from "@/components/ui/badge"
+import { useToast } from "@/components/ui/use-toast"
 import { motion } from "framer-motion"
+import { CopyButton } from "@/components/ui/copy-button"
 
 interface LUTAddress {
   index: number
@@ -26,14 +27,13 @@ interface ViewLUTProps {
 export default function ViewLUT({ lutAddress, setLutAddress }: ViewLUTProps) {
   const { publicKey } = useWallet()
   const { endpoint } = useNetwork()
+  const { toast } = useToast()
   const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
   const [addresses, setAddresses] = useState<LUTAddress[]>([])
   const [searchTerm, setSearchTerm] = useState("")
 
   const handleViewLUT = async () => {
     setIsLoading(true)
-    setError(null)
     setAddresses([])
 
     try {
@@ -66,9 +66,22 @@ export default function ViewLUT({ lutAddress, setLutAddress }: ViewLUTProps) {
       }))
 
       setAddresses(addressList)
+
+      if (addressList.length === 0) {
+        toast({
+          title: "Empty LUT",
+          description: "This Look-Up Table contains no addresses.",
+          duration: 4000,
+        })
+      }
     } catch (err) {
       console.error("Error viewing LUT:", err)
-      setError(err instanceof Error ? err.message : "Failed to view LUT")
+      toast({
+        variant: "destructive",
+        title: "Failed to Load LUT",
+        description: err instanceof Error ? err.message : "An unexpected error occurred while loading the LUT.",
+        duration: 6000,
+      })
     } finally {
       setIsLoading(false)
     }
@@ -80,10 +93,6 @@ export default function ViewLUT({ lutAddress, setLutAddress }: ViewLUTProps) {
       handleViewLUT()
     }
   }, [lutAddress, endpoint])
-
-  const copyToClipboard = (text: string) => {
-    navigator.clipboard.writeText(text)
-  }
 
   // Filter addresses based on search term
   const filteredAddresses = addresses.filter(
@@ -137,15 +146,6 @@ export default function ViewLUT({ lutAddress, setLutAddress }: ViewLUTProps) {
             </div>
           </div>
 
-          {error && (
-            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }}>
-              <Alert variant="destructive" className="border border-red-900/50 bg-red-900/20">
-                <AlertCircle className="h-4 w-4" />
-                <AlertDescription>{error}</AlertDescription>
-              </Alert>
-            </motion.div>
-          )}
-
           {addresses.length > 0 && (
             <motion.div
               initial={{ opacity: 0, y: 10 }}
@@ -187,14 +187,7 @@ export default function ViewLUT({ lutAddress, setLutAddress }: ViewLUTProps) {
                               {item.address}
                             </TableCell>
                             <TableCell>
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                onClick={() => copyToClipboard(item.address)}
-                                className="h-8 w-8 hover:bg-slate-700/50"
-                              >
-                                <Copy className="h-4 w-4" />
-                              </Button>
+                              <CopyButton text={item.address} className="h-8 w-8 hover:bg-slate-700/50" />
                             </TableCell>
                           </TableRow>
                         ))
@@ -212,7 +205,7 @@ export default function ViewLUT({ lutAddress, setLutAddress }: ViewLUTProps) {
             </motion.div>
           )}
 
-          {!addresses.length && !error && !isLoading && lutAddress && (
+          {!addresses.length && !isLoading && lutAddress && (
             <div className="flex flex-col justify-center items-center py-8 px-6 text-center">
               <div className="w-16 h-16 rounded-full bg-yellow-900/20 flex items-center justify-center mb-4">
                 <AlertCircle className="h-8 w-8 text-yellow-500" />

@@ -12,10 +12,10 @@ import {
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Textarea } from "@/components/ui/textarea"
-import { Alert, AlertDescription } from "@/components/ui/alert"
-import { Loader2, AlertCircle, CheckCircle2, Database, Copy } from "lucide-react"
+import { Loader2, Database } from "lucide-react"
 import { useNetwork } from "./wallet-provider"
-import { motion } from "framer-motion"
+import { useToast } from "@/components/ui/use-toast"
+import { CopyButton } from "@/components/ui/copy-button"
 
 interface CreateLUTProps {
   addresses: string
@@ -24,21 +24,23 @@ interface CreateLUTProps {
 
 export default function CreateLUT({ addresses, setAddresses }: CreateLUTProps) {
   const { publicKey, signTransaction } = useWallet()
-  const { endpoint } = useNetwork()
+  const { endpoint, network } = useNetwork()
+  const { toast } = useToast()
   const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  const [success, setSuccess] = useState<string | null>(null)
   const [createdLutAddress, setCreatedLutAddress] = useState<string | null>(null)
 
   const handleCreateLUT = async () => {
     if (!publicKey || !signTransaction) {
-      setError("Wallet not connected")
+      toast({
+        variant: "destructive",
+        title: "Wallet Error",
+        description: "Wallet not connected. Please connect your wallet to continue.",
+        duration: 4000,
+      })
       return
     }
 
     setIsLoading(true)
-    setError(null)
-    setSuccess(null)
     setCreatedLutAddress(null)
 
     try {
@@ -95,18 +97,29 @@ export default function CreateLUT({ addresses, setAddresses }: CreateLUTProps) {
 
       await connection.confirmTransaction(signature)
 
-      setCreatedLutAddress(lookupTableAddress.toBase58())
-      setSuccess(`LUT created successfully!`)
+      const lutAddress = lookupTableAddress.toBase58()
+      setCreatedLutAddress(lutAddress)
+
+      // Show success toast with transaction hash
+      toast({
+        variant: "success",
+        title: "LUT Created Successfully!",
+        description: `Your Look-Up Table has been created with ${publicKeys.length} addresses. Click to view transaction.`,
+        duration: 8000,
+        transactionHash: signature,
+        network: network,
+      })
     } catch (err) {
       console.error("Error creating LUT:", err)
-      setError(err instanceof Error ? err.message : "Failed to create LUT")
+      toast({
+        variant: "destructive",
+        title: "Failed to Create LUT",
+        description: err instanceof Error ? err.message : "An unexpected error occurred while creating the LUT.",
+        duration: 6000,
+      })
     } finally {
       setIsLoading(false)
     }
-  }
-
-  const copyToClipboard = (text: string) => {
-    navigator.clipboard.writeText(text)
   }
 
   return (
@@ -143,35 +156,11 @@ export default function CreateLUT({ addresses, setAddresses }: CreateLUTProps) {
             </p>
           </div>
 
-          {error && (
-            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }}>
-              <Alert variant="destructive" className="border border-red-900/50 bg-red-900/20">
-                <AlertCircle className="h-4 w-4" />
-                <AlertDescription>{error}</AlertDescription>
-              </Alert>
-            </motion.div>
-          )}
-
-          {success && createdLutAddress && (
-            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }}>
-              <Alert className="border border-green-900/50 bg-green-900/20">
-                <CheckCircle2 className="h-4 w-4 text-green-500" />
-                <AlertDescription className="flex flex-col space-y-2">
-                  <span className="text-green-400">{success}</span>
-                  <div className="flex items-center mt-2 bg-slate-800/50 p-2 rounded-md">
-                    <span className="text-xs font-mono text-slate-300 truncate flex-1">{createdLutAddress}</span>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => copyToClipboard(createdLutAddress)}
-                      className="h-8 w-8 hover:bg-slate-700/50"
-                    >
-                      <Copy className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </AlertDescription>
-              </Alert>
-            </motion.div>
+          {createdLutAddress && (
+            <div className="flex items-center mt-2 bg-slate-800/50 p-3 rounded-md border border-green-500/30">
+              <span className="text-xs font-mono text-slate-300 truncate flex-1">Created: {createdLutAddress}</span>
+              <CopyButton text={createdLutAddress} className="h-8 w-8 hover:bg-slate-700/50" />
+            </div>
           )}
         </div>
       </CardContent>
