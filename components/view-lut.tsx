@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { useWallet } from "@solana/wallet-adapter-react"
 import { Connection, PublicKey } from "@solana/web3.js"
 import { Button } from "@/components/ui/button"
@@ -32,7 +32,7 @@ export default function ViewLUT({ lutAddress, setLutAddress }: ViewLUTProps) {
   const [addresses, setAddresses] = useState<LUTAddress[]>([])
   const [searchTerm, setSearchTerm] = useState("")
 
-  const handleViewLUT = async () => {
+  const handleViewLUT = useCallback(async () => {
     setIsLoading(true)
     setAddresses([])
 
@@ -85,14 +85,13 @@ export default function ViewLUT({ lutAddress, setLutAddress }: ViewLUTProps) {
     } finally {
       setIsLoading(false)
     }
-  }
+  }, [lutAddress, endpoint, toast])
 
-  // Auto-fetch addresses when lutAddress changes and is valid
   useEffect(() => {
     if (lutAddress && lutAddress.length >= 32) {
       handleViewLUT()
     }
-  }, [lutAddress, endpoint])
+  }, [lutAddress, endpoint, handleViewLUT])
 
   // Filter addresses based on search term
   const filteredAddresses = addresses.filter(

@@ -33,11 +33,12 @@ export default function WalletContextProvider({
 }) {
   const [network, setNetwork] = useState<Network>("devnet")
 
-  // You can also provide a custom RPC endpoint
   const endpoint = useMemo(() => {
-    // Use custom RPC URL if provided in env vars
-    if (process.env.NEXT_PUBLIC_SOLANA_RPC_URL) {
-      return process.env.NEXT_PUBLIC_SOLANA_RPC_URL
+    if (network === "mainnet-beta" && process.env.NEXT_PUBLIC_MAINNET_RPC_URL) {
+      return process.env.NEXT_PUBLIC_MAINNET_RPC_URL
+    }
+    if (network === "devnet" && process.env.NEXT_PUBLIC_DEVNET_RPC_URL) {
+      return process.env.NEXT_PUBLIC_DEVNET_RPC_URL
     }
     return clusterApiUrl(network)
   }, [network])

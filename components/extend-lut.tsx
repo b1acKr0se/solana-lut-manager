@@ -47,20 +47,18 @@ export default function ExtendLUT({ lutAddress, setLutAddress, addresses, setAdd
   const [duplicateAnalysis, setDuplicateAnalysis] = useState<DuplicateAnalysis | null>(null)
   const [showConfirmation, setShowConfirmation] = useState(false)
 
-  // Use a ref to track if addresses have been loaded for this LUT address
-  const loadedLutRef = useRef<string | null>(null)
+  const loadedLutRef = useRef<{ address: string; endpoint: string } | null>(null)
 
   // Fetch current LUT addresses when the LUT address changes
   useEffect(() => {
     const fetchLutAddresses = async () => {
-      // Skip if the address is empty or too short
       if (!lutAddress || lutAddress.length < 32) {
         setCurrentAddresses([])
+        loadedLutRef.current = null
         return
       }
 
-      // Skip if we've already loaded this LUT address
-      if (loadedLutRef.current === lutAddress) {
+      if (loadedLutRef.current?.address === lutAddress && loadedLutRef.current?.endpoint === endpoint) {
         return
       }
 
@@ -103,11 +101,15 @@ export default function ExtendLUT({ lutAddress, setLutAddress, addresses, setAdd
         console.log(`Found ${addressList.length} addresses in LUT`)
         setCurrentAddresses(addressList)
 
-        // Mark this LUT as loaded
-        loadedLutRef.current = lutAddress
+        loadedLutRef.current = { address: lutAddress, endpoint }
       } catch (err) {
         console.error("Error fetching LUT addresses:", err)
-        // Don't clear current addresses on error to avoid flickering
+        toast({
+          variant: "destructive",
+          title: "Failed to Load LUT",
+          description: err instanceof Error ? err.message : "An unexpected error occurred while loading the LUT.",
+          duration: 6000,
+        })
       } finally {
         setIsLoadingLut(false)
       }
