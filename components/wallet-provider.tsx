@@ -31,7 +31,17 @@ export default function WalletContextProvider({
 }: {
   children: React.ReactNode
 }) {
-  const [network, setNetwork] = useState<Network>("devnet")
+  const [network, setNetwork] = useState<Network>(() => {
+    if (typeof window === "undefined") return "devnet"
+    const saved = localStorage.getItem("solana-network") as Network | null
+    if (saved === "mainnet-beta" || saved === "devnet" || saved === "testnet") return saved
+    return "devnet"
+  })
+
+  const handleSetNetwork = (net: Network) => {
+    setNetwork(net)
+    localStorage.setItem("solana-network", net)
+  }
 
   const endpoint = useMemo(() => {
     if (network === "mainnet-beta" && process.env.NEXT_PUBLIC_MAINNET_RPC_URL) {
@@ -49,7 +59,7 @@ export default function WalletContextProvider({
   const networkContextValue = useMemo(
     () => ({
       network,
-      setNetwork,
+      setNetwork: handleSetNetwork,
       endpoint,
     }),
     [network, endpoint],
